@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BeatMusic</title>
+    <title>Sonify</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1870,7 +1870,7 @@
             <input type="file" id="importLibraryInput" accept=".json" style="display:none" onchange="importLibrary(event)">
             <button class="btn btn-secondary" onclick="resetSettings()">Сброс настроек</button>
         </div>
-        <div class="settings-footer">BeatMusic v2.0</div>
+        <div class="settings-footer">Sonify v2.0</div>
     </div>
 
     <!-- Кастомизация плеера — изменено название -->
@@ -1921,7 +1921,7 @@
     <div class="app-container" id="appContainer">
         <div class="main-content">
             <div class="header">
-                <div class="header-left"><span class="logo">BeatMusic</span></div>
+                <div class="header-left"><span class="logo">Sonify</span></div>
                 <div class="header-controls">
                     <button class="menu-toggle" id="menuToggle" onclick="toggleMenu()">
                         <span class="bar"></span>
@@ -2020,7 +2020,7 @@
     </div>
 
     <script>
-        const DB_NAME = 'BeatMusicDB';
+        const DB_NAME = 'SonifyDB';
         const STORE_TRACKS = 'tracks';
         const STORE_PLAYLISTS = 'playlists';
         let db = null;
@@ -2414,10 +2414,10 @@
         async function saveAllData() {
             try {
                 if (db) { await saveAllTracksToDB(); await savePlaylistsToDB(); }
-                localStorage.setItem('beatMusicTracks', JSON.stringify(musicLibrary));
-                localStorage.setItem('beatMusicPlaylists', JSON.stringify(playlists));
-                localStorage.setItem('beatMusicSettings', JSON.stringify(settings));
-                localStorage.setItem('beatMusicCustomization', JSON.stringify(customization));
+                localStorage.setItem('sonifyTracks', JSON.stringify(musicLibrary));
+                localStorage.setItem('sonifyPlaylists', JSON.stringify(playlists));
+                localStorage.setItem('sonifySettings', JSON.stringify(settings));
+                localStorage.setItem('sonifyCustomization', JSON.stringify(customization));
                 updateStorageInfo();
                 return true;
             } catch (e) { console.warn('Ошибка сохранения:', e); return false; }
@@ -2429,12 +2429,12 @@
                 try { tracks = await getAllTracksFromDB(); pls = await getAllPlaylistsFromDB(); } catch(e) {}
                 
                 if (!tracks || tracks.length === 0) {
-                    const saved = localStorage.getItem('beatMusicTracks');
+                    const saved = localStorage.getItem('sonifyTracks');
                     if (saved) { try { const parsed = JSON.parse(saved); if (Array.isArray(parsed)) tracks = parsed; } catch(e) {} }
                 }
                 
                 if (!pls || pls.length === 0) {
-                    const sp = localStorage.getItem('beatMusicPlaylists');
+                    const sp = localStorage.getItem('sonifyPlaylists');
                     if (sp) { try { const parsed = JSON.parse(sp); if (Array.isArray(parsed)) pls = parsed.map(p => typeof p === 'string' ? { name: p } : p); } catch(e) {} }
                 }
                 
@@ -2444,10 +2444,10 @@
                 playlists = ['all'];
                 pls.forEach(p => { const name = typeof p === 'string' ? p : p.name; if (name && name !== 'all' && !playlists.includes(name)) { playlists.push(name); } });
                 
-                const ss = localStorage.getItem('beatMusicSettings');
+                const ss = localStorage.getItem('sonifySettings');
                 if (ss) { try { settings = { ...settings, ...JSON.parse(ss) }; } catch(e) {} }
                 
-                const cs = localStorage.getItem('beatMusicCustomization');
+                const cs = localStorage.getItem('sonifyCustomization');
                 if (cs) { try { customization = { ...customization, ...JSON.parse(cs) }; } catch(e) {} }
                 
                 await saveAllData();
@@ -2992,7 +2992,7 @@
         function exportLibrary() {
             const data = JSON.stringify({ tracks: musicLibrary.map(t => ({ ...t, url: t.url ? 'base64_data' : null })), playlists: playlists, version: '2.0' }, null, 2);
             const blob = new Blob([data], { type: 'application/json' }); const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = 'beatmusic_library.json'; a.click(); URL.revokeObjectURL(url);
+            const a = document.createElement('a'); a.href = url; a.download = 'sonify_library.json'; a.click(); URL.revokeObjectURL(url);
         }
 
         async function importLibrary(e) {
